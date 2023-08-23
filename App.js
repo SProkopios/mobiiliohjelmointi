@@ -7,32 +7,36 @@ import { StyleSheet, Text, View, Button, Alert, TextInput } from 'react-native';
 
 
 export default function App() {
-  const [numberone, setNumberone] = useState();
-  const [numbertwo, setNumbertwo] = useState();
-  const [answer, setAnswer] = useState();
+  const [quess, setQuess] = useState();
+  const [text, setText] = useState("Guess a number between 1-100");
+  const [answer, setAnswer] = useState(Math.floor(Math.random() * 100) + 1);
+  
+  const [counter, setCounter] = useState(1);
 
-  const add = () => {
-    setAnswer(parseInt(numberone) + parseInt(numbertwo));
-  }
 
-  const unadd = () => {
-    setAnswer(parseInt(numberone) - parseInt(numbertwo));
+
+  const makequess = () => {
+    if (quess > answer) { 
+      setText("Your quess " + quess + " is too high");
+      setCounter(counter + 1);
+    } else if (quess < answer) {
+      setText("Your quess " + quess + " is too low");
+      setCounter(counter + 1);
+    }else {
+      Alert.alert("You quessed the number in " + counter + " quesses")
+    }
   }
 
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Result: {answer}</Text>
+      <Text>{text}</Text>
       <View>
         <TextInput keyboardType='numeric' placeholder='Number' style={{width: 200, borderColor: 'gray', borderWidth: 1}}
-        onChangeText={numberone => setNumberone(numberone)} value={numberone} />
-        <TextInput keyboardType='numeric' placeholder='Number' style={{width: 200, borderColor: 'gray', borderWidth: 1}}
-        onChangeText={numbertwo => setNumbertwo(numbertwo)} value={numbertwo} />
-
+        onChangeText={quess => setQuess(quess)} value={quess} />
       </View>
       <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
-        <Button onPress={add} title="+" />
-        <Button onPress={unadd} title="-" />
+        <Button onPress={makequess} title="MAKE QUESS" />
       </View>
       <StatusBar style="auto" />
     </View>
