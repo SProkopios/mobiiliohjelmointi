@@ -1,43 +1,50 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { StyleSheet, Text, View, Button, Alert, TextInput } from 'react-native';
-
-
-
-
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Button, TextInput, FlatList } from 'react-native';
 
 export default function App() {
-  const [quess, setQuess] = useState();
-  const [text, setText] = useState("Guess a number between 1-100");
-  const [answer, setAnswer] = useState(Math.floor(Math.random() * 100) + 1);
-  
-  const [counter, setCounter] = useState(1);
+  const [textone, setTextone] = useState('');
+  const [texttwo, setTexttwo] = useState('');
+  const [answer, setAnswer] = useState();
+  const [operator, setOperator] = useState('');
+  const [data, setData] = useState([]);
 
+  useEffect(() => {
+    if (answer !== undefined) {
+      let text = textone + " " + operator + " "  + texttwo + " = " + answer;
+      setData([...data, { key: text }]);
+      setTextone("");
+      setTexttwo("");
+    } 
+  }, [answer])
 
-
-  const makequess = () => {
-    if (quess > answer) { 
-      setText("Your quess " + quess + " is too high");
-      setCounter(counter + 1);
-    } else if (quess < answer) {
-      setText("Your quess " + quess + " is too low");
-      setCounter(counter + 1);
-    }else {
-      Alert.alert("You quessed the number in " + counter + " quesses")
-    }
+  const add = () => {
+    setAnswer(parseInt(textone) + parseInt(texttwo));
+    setOperator("+");
   }
 
+  const unadd = () => {
+    setAnswer(parseInt(textone) - parseInt(texttwo));
+    setOperator("-");
+  }
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>{text}</Text>
-      <View>
-        <TextInput keyboardType='numeric' placeholder='Number' style={{width: 200, borderColor: 'gray', borderWidth: 1}}
-        onChangeText={quess => setQuess(quess)} value={quess} />
+    <View style={styles.container}>
+      <Text>Result: {answer}</Text>
+      <TextInput keyboardType='numeric' style={styles.input} onChangeText={textone => setTextone(textone)} value={textone} />
+      <TextInput keyboardType='numeric' style={styles.inputtwo} onChangeText={texttwo => setTexttwo(texttwo)} value={texttwo} />
+      <View style={styles.buttons}>
+        <Button onPress={add} title="+" />
+        <Button onPress={unadd} title="-" />
       </View>
-      <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
-        <Button onPress={makequess} title="MAKE QUESS" />
-      </View>
+      <Text>History</Text>
+      <FlatList style={styles.list}
+        data={data}
+        renderItem={({ item }) =>
+          <Text>{item.key}</Text>
+        }
+        keyExtractor={(item, index) => index.toString()}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -49,5 +56,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 100
   },
+  input: {
+    marginTop: 5,
+    marginBottom: 5,
+    width: 200,
+    borderColor: 'gray',
+    borderWidth: 1
+  },
+  inputtwo: {
+    marginTop: 0,
+    marginBottom: 5,
+    width: 200,
+    borderColor: 'gray',
+    borderWidth: 1
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: 90,
+    marginTop: 30,
+    marginBottom: 50
+    }
 });
