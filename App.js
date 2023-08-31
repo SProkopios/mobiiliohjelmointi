@@ -3,41 +3,28 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, FlatList } from 'react-native';
 
 export default function App() {
-  const [textone, setTextone] = useState('');
-  const [texttwo, setTexttwo] = useState('');
-  const [answer, setAnswer] = useState();
-  const [operator, setOperator] = useState('');
+  const [text, setText] = useState('');
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    if (answer !== undefined) {
-      let text = textone + " " + operator + " "  + texttwo + " = " + answer;
-      setData([...data, { key: text }]);
-      setTextone("");
-      setTexttwo("");
-    } 
-  }, [answer])
 
   const add = () => {
-    setAnswer(parseInt(textone) + parseInt(texttwo));
-    setOperator("+");
+    setData([...data, { key: text }]);
+    setText("");
   }
 
-  const unadd = () => {
-    setAnswer(parseInt(textone) - parseInt(texttwo));
-    setOperator("-");
+  const clear = () => {
+    setData([]);
+    setText("");
   }
 
   return (
     <View style={styles.container}>
-      <Text>Result: {answer}</Text>
-      <TextInput keyboardType='numeric' style={styles.input} onChangeText={textone => setTextone(textone)} value={textone} />
-      <TextInput keyboardType='numeric' style={styles.inputtwo} onChangeText={texttwo => setTexttwo(texttwo)} value={texttwo} />
+      <TextInput style={styles.input} onChangeText={text => setText(text)} value={text} />
       <View style={styles.buttons}>
-        <Button onPress={add} title="+" />
-        <Button onPress={unadd} title="-" />
+        <Button onPress={add} title="ADD" />
+        <Button onPress={clear} title="CLEAR" />
       </View>
-      <Text>History</Text>
+      <Text style={styles.title}>Shopping List</Text>
       <FlatList style={styles.list}
         data={data}
         renderItem={({ item }) =>
@@ -78,5 +65,10 @@ const styles = StyleSheet.create({
     width: 90,
     marginTop: 30,
     marginBottom: 50
+    },
+    title: {
+      fontSize: 18,
+      color: "#0000FF",
+      fontWeight: "bold"
     }
 });
