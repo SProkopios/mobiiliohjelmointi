@@ -9,7 +9,7 @@ export default function HomeScreen() {
     const [amount, setAmount] = useState('');
     const [rate, setRate] = useState([]);
     const [currency, setCurrency] = useState('');
-    const API_KEY = "6Nxp07Nkbxt25kVaMgBNW6xE4FLPwMqm";
+    const API_KEY = "404";
 
     const requestData = {
       method: 'GET',
