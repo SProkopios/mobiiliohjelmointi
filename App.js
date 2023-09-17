@@ -9,8 +9,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen name="Caculator" component={HomeScreen} />
-      <Stack.Screen name="History" component={SettingScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
