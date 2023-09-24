@@ -6,7 +6,7 @@ export default function App() {
   const [address, setAdress] = useState('');
   const [longitude, setLongitude] = useState(24.934302);
   const [latitude, setLatitude] = useState(60.200692);
-  const API_KEY = "5y4uogaz6rL2ArmMUliSjck2l07jTIQ7";
+  const API_KEY = "404";
 
   const getPlace = () => {
     fetch(`https://www.mapquestapi.com/geocoding/v1/address?key=${API_KEY}&location=${address}`)
