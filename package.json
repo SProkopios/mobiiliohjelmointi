@@ -20,7 +20,9 @@
     "react-native-screens": "~3.22.0",
     "@react-native-picker/picker": "2.4.10",
     "react-native-maps": "1.7.1",
-    "expo-location": "~16.1.0"
+    "expo-location": "~16.1.0",
+    "@react-native-async-storage/async-storage": "1.18.2",
+    "expo-sqlite": "~11.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
