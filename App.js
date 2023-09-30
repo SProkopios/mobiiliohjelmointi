@@ -1,70 +1,101 @@
 import { View, FlatList, TextInput, Button, StyleSheet, Text } from "react-native";
-import * as SQLite from 'expo-sqlite';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, push, ref, onValue,remove, query, collection } from 'firebase/database';
 import { useState, useEffect } from "react";
+import { getApp, getApps } from "firebase/app";
+
+
+const firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
 
 
 export default function App() {
-  const [amount, setAmount] = useState('');
-  const [product, setProduct] = useState('');
-  const [shoppinglist, setShoppinglist] = useState([]);
-  const db = SQLite.openDatabase('shoppinglistdb.db');
+  const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  const database = getDatabase(app);
+  const [amount, setAmount] = useState("");
+  const [product, setProduct] = useState("");
+  const [items, setItems] = useState([]);
 
+  // useEffect(() => {
+  //   const itemsRef = ref(database, "items/");
+  //   onValue(itemsRef, (snapshot) => {
+  //     const data = snapshot.val();
+  //     setItems(Object.values(data));
+  //   });
+  // }, []);
 
   useEffect(() => {
-    db.transaction(tx => {
-      tx.executeSql('create table if not exists shoppinglist (id integer primary key not null, amount text, product text);');
-    }, () => console.error("Error when creating DB"), updateList);
+    const itemsRef = ref(database, 'items/');
+    onValue(itemsRef, (snapshot) => {
+      const data = snapshot.val();
+      const itemsArray = data ? Object.entries(data).map(([key, value]) => ({ key, ...value })) : [];
+      setItems(itemsArray);
+    });
   }, []);
-    
-    
+
+
   const saveItem = () => {
-    db.transaction(tx => {
-      tx.executeSql('insert into shoppinglist (amount, product) values (?, ?);',
-        [amount, product]);
-      }, null, updateList)
-  }
-    
-  const updateList = () => {
-    db.transaction(tx => {
-      tx.executeSql('select * from shoppinglist;', [], (_, { rows }) =>
-        setShoppinglist(rows._array)
-      );
-    }, null, null);
-  }
-    
-  const deleteItem = (id) => {
-    db.transaction(
-      tx => tx.executeSql('delete from shoppinglist where id = ?;', [id]), null, updateList);
-  }
+    push(ref(database, "items/"), { product: product, amount: amount });
+    setProduct("");
+    setAmount("");
+  };
+
+  const deleteItem = (key) => {
+    const itemRef = ref(database, `items/${key}`);
+    remove(itemRef)
+      .then(() => {
+        console.log(`Item with key ${key} successfully deleted from Firebase.`);
+        setItems(prevItems => prevItems.filter(item => item.key !== key));
+      })
+      .catch((error) => {
+        console.error(`Error deleting item from Firebase: ${error}`);
+      });
+  };
 
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.texts}
-        placeholder='Product'
-        onChangeText={product => setProduct(product)}
-        value={product}/>
+        placeholder="Product"
+        onChangeText={(product) => setProduct(product)}
+        value={product}
+      />
       <TextInput
         style={styles.texts}
-        placeholder='Amount'
-        onChangeText={amount => setAmount(amount)}
-        value={amount}/>
+        placeholder="Amount"
+        onChangeText={(amount) => setAmount(amount)}
+        value={amount}
+      />
       <Button onPress={saveItem} title="Save" />
       <Text>Shopping list</Text>
       <FlatList
-        style={{marginLeft : "5%"}}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({item}) =>
-        <View style={styles.listcontainer}>
-          <Text>{item.product}, {item.amount} </Text>
-          <Text style={{color: '#0000ff'}} onPress={() => deleteItem(item.id)}>Bought</Text>
-        </View>}
-        data={shoppinglist}
+        style={{ marginLeft: "5%" }}
+        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => (
+          <View style={styles.listcontainer}>
+            <Text>
+              {item.product}, {item.amount}{" "}
+            </Text>
+            <Text
+              style={{ color: "#0000ff" }}
+              onPress={() => deleteItem(item.key)}
+            >
+              Bought
+            </Text>
+          </View>
+        )}
+        data={items}
       />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
