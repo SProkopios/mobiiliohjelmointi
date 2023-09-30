@@ -50,13 +50,6 @@ export default function App() {
   const deleteItem = (key) => {
     const itemRef = ref(database, `items/${key}`);
     remove(itemRef)
-      .then(() => {
-        console.log(`Item with key ${key} successfully deleted from Firebase.`);
-        setItems(prevItems => prevItems.filter(item => item.key !== key));
-      })
-      .catch((error) => {
-        console.error(`Error deleting item from Firebase: ${error}`);
-      });
   };
 
   return (
