@@ -1,40 +1,31 @@
 import { View, FlatList, TextInput, Button, StyleSheet, Text } from "react-native";
 import { useState } from "react";
-import * as Contacts from 'expo-contacts';
+import * as Speech from 'expo-speech';
 
 
 export default function App() {
-  const [contact, setContact] = useState();
+  const [text, setText] = useState();
 
 
-  const getContacts = async () => {
-    const { status } = await Contacts.requestPermissionsAsync();
-    if (status === 'granted') {
-      const { data } = await Contacts.getContactsAsync(
-        { fields: [Contacts.Fields.PhoneNumbers] }
-      );
-      if (data.length > 0) {
-        setContact(data);
-      }
-    }
+  const speak = () => {
+    Speech.speak(text);
   };
     
 
-
-
-
   return (
     <View style={styles.container}>
-      <FlatList
-        data={ contact }
-        renderItem={({ item }) => 
-          <Text>{item.name} {item.phoneNumbers[0].number}</Text>
-        }
+      <TextInput
+        style={styles.texts}
+        placeholder="Write your text here"
+        onChangeText={(text) => setText(text)}
+        value={text}
       />
-      <Button title="Get Contact" onPress={getContacts} />
+      <Button title="LETS HEAR IT" onPress={speak} />
     </View>
   );
 }
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
